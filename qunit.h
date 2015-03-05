@@ -24,7 +24,7 @@
 
 #define QUNIT_VERSION_MAJOR 0
 #define QUNIT_VERSION_MINOR 1
-#define QUNIT_VERSION_PATCH 1
+#define QUNIT_VERSION_PATCH 2
 #define __QUNIT_VERSION(__maj, __min, __pat) #__maj "." #__min "." #__pat
 #define _QUNIT_VERSION(__maj, __min, __pat) __QUNIT_VERSION(__maj, __min, __pat)
 #define QUNIT_VERSION _QUNIT_VERSION(QUNIT_VERSION_MAJOR, QUNIT_VERSION_MINOR, QUNIT_VERSION_PATCH)
@@ -194,6 +194,20 @@ void qunit_print_header() {
 }
 
 /*
+ * Console reporter function.
+ *
+ * This is a reporter function that outputs the test results to the console.
+ *
+ * name: The test name
+ * result: The test result
+ */
+void qunit_reporter_console(const char* name, QUNIT_RESULT result) {
+  const char* s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
+
+  printf("\t[%s] %s()\n", s_result, name);
+}
+
+/*
  * Runs a test case.
  *
  * Runs every test of the test case and after each test the reporter function is called to report the results.
@@ -206,6 +220,9 @@ unsigned int qunit_tcase_run(QUNIT_TESTCASE *tcase) {
   size_t i, j;
   unsigned int failed = 0;
 
+  if(!tcase->reporters[0])
+    qunit_tcase_add_reporter(tcase, qunit_reporter_console);
+    
   for(i = 0; i < QUNIT_MAX_TESTS; i++) {
     if(tcase->tests[i]) {
       tcase->results[i] = QUNIT_RESULT_PASSED;
@@ -221,20 +238,6 @@ unsigned int qunit_tcase_run(QUNIT_TESTCASE *tcase) {
   }
 
   return failed;
-}
-
-/*
- * Console reporter function.
- *
- * This is a reporter function that outputs the test results to the console.
- *
- * name: The test name
- * result: The test result
- */
-void qunit_reporter_console(const char* name, QUNIT_RESULT result) {
-  const char* s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
-
-  printf("\t[%s] %s()\n", s_result, name);
 }
 
 #endif /* !_QUNIT_H */
