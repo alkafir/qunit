@@ -24,7 +24,7 @@
 
 #define QUNIT_VERSION_MAJOR 0
 #define QUNIT_VERSION_MINOR 1
-#define QUNIT_VERSION_PATCH 2
+#define QUNIT_VERSION_PATCH 3
 #define __QUNIT_VERSION(__maj, __min, __pat) #__maj "." #__min "." #__pat
 #define _QUNIT_VERSION(__maj, __min, __pat) __QUNIT_VERSION(__maj, __min, __pat)
 #define QUNIT_VERSION _QUNIT_VERSION(QUNIT_VERSION_MAJOR, QUNIT_VERSION_MINOR, QUNIT_VERSION_PATCH)
@@ -37,6 +37,11 @@
 /* Maximum number of reporters per test case. Can be overridden in test files. */
 #ifndef QUNIT_MAX_REPORTERS
   #define QUNIT_MAX_REPORTERS 4
+#endif
+
+/* Default reporter for test case which do not define one. */
+#ifndef QUNIT_DEFAULT_REPORTER
+  #define QUNIT_DEFAULT_REPORTER qunit_reporter_console
 #endif
 
 /*
@@ -221,7 +226,7 @@ unsigned int qunit_tcase_run(QUNIT_TESTCASE *tcase) {
   unsigned int failed = 0;
 
   if(!tcase->reporters[0])
-    qunit_tcase_add_reporter(tcase, qunit_reporter_console);
+    qunit_tcase_add_reporter(tcase, QUNIT_DEFAULT_REPORTER);
     
   for(i = 0; i < QUNIT_MAX_TESTS; i++) {
     if(tcase->tests[i]) {
