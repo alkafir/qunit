@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
   qunit_print_header(); /* Print the standard QUnit header */
   unsigned int failed = qunit_tcase_run(&tcase); /* Run the test case */
   
-  printf("%u failed tests.", failed);
+  printf("%u failed tests.\n", failed);
 
   return 0;
 }
