@@ -21,10 +21,11 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
+#include <errno.h>
 
 #define QUNIT_VERSION_MAJOR 0
-#define QUNIT_VERSION_MINOR 1
-#define QUNIT_VERSION_PATCH 3
+#define QUNIT_VERSION_MINOR 2
+#define QUNIT_VERSION_PATCH 0
 #define __QUNIT_VERSION(__maj, __min, __pat) #__maj "." #__min "." #__pat
 #define _QUNIT_VERSION(__maj, __min, __pat) __QUNIT_VERSION(__maj, __min, __pat)
 #define QUNIT_VERSION _QUNIT_VERSION(QUNIT_VERSION_MAJOR, QUNIT_VERSION_MINOR, QUNIT_VERSION_PATCH)
@@ -52,7 +53,7 @@
  * __test_name: The name to assign to the test
  *
  * Example:
- *  TEST(myTest1) {
+ *  QUNIT_TEST(myTest1) {
  *    ...
  *  }
  */
@@ -96,6 +97,92 @@
  *  qunit_assert(1 == 5)
  */
 #define qunit_assert(__code) if(!__code) qunit_fail()
+
+/*
+ * Error assert macro.
+ *
+ * Fails the test if the given error number is stored in `errno`.
+ *
+ * __errno: The error code to check against `errno`.
+ *
+ * Example:
+ *  qunit_assert_errno(ERANGE)
+ */
+#define qunit_assert_errno(__errno) if(errno == __errno) qunit_fail()
+
+/*
+ * No error assert macro.
+ *
+ * Fails the test if `errno` is non-zero.
+ */
+#define qunit_assert_errno0() if(errno) qunit_fail()
+
+/*
+ * Vector equality assertion macro.
+ *
+ * Fails the test if the two provided vectors are not the same.
+ * Equality is tested through a numerical equality comparison (operators ==, !=).
+ *
+ * __vec1: The first vector
+ * __vec2: The second vector
+ * __len: The length of the vectors
+ *
+ * Example:
+ *  int a[] = {1, 2, 3};
+ *  int b[] = {1, 2, 4};
+ *
+ *  qunit_assert_vector_equals(a, b, 3); <-- Will fail
+ */
+#define qunit_assert_vector_equals(__vec1, __vec2, __len) { size_t __i; for(__i = 0; __i < __len; __i++) if(__vec1[__i] != __vec2[__i]) qunit_fail(); } while(0)
+
+/*
+ * Vector equality assertion macro.
+ *
+ * Fails the test if the two provided vectors are not the same.
+ * Equality is tested through a memory equality comparison (memcmp() function).
+ *
+ * __vec1: The first vector
+ * __vec2: The second vector
+ * __len: The length of the vectors
+ * __sz: The size of the single element of the vectors
+ *
+ * Example:
+ *  struct s{ int a; char b; };
+ *  struct s a[] = {{1, 2}, {1, 3}};
+ *  struct s b[] = {{1, 2}, {1, 3}};
+ *
+ *  qunit_assert_vector_equals2(a, b, 2, sizeof(struct s)); <-- Will pass
+ *
+ * See:
+ *  qunit_assert_vector_equals3() for comparing the data of vectors of pointers.
+ */
+#define qunit_assert_vector_equals2(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < __len; __i++) if(memcmp(&__vec1[__i], &__vec2[__i], __sz)) qunit_fail(); } while(0)
+
+/*
+ * Vector equality assertion macro.
+ *
+ * Fails the test if the two provided vectors are not the same.
+ * Equality is tested through a memory equality comparison (memcmp() function).
+ * Each element of the provided vectors must be a pointer to data of size `__sz`.
+ *
+ * __vec1: The first vector
+ * __vec2: The second vector
+ * __len: The length of the vectors
+ * __sz: The size of the single element of the vectors
+ *
+ * Example:
+ *  struct s{ int a; char b; };
+ *  typedef struct s * s_ptr;
+ *
+ *  struct s s1 = {1, 2};
+ *  struct s s2 = {1, 3};
+ *
+ *  s_ptr a[] = {&s1, &s2};
+ *  s_ptr b[] = {&s1, &s2};
+ *
+ *  qunit_assert_vector_equals2(a, b, 2, sizeof(struct s));
+ */
+#define qunit_assert_vector_equals3(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < __len; __i++) if(memcmp(__vec1[__i], __vec2[__i], __sz)) qunit_fail(); } while(0)
 
 /*
  * Test result enumeration.
