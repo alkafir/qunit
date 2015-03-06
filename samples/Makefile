@@ -12,7 +12,7 @@ endif
 
 BINARIES=$(foreach src,$(SOURCES),$(addsuffix $(BIN_EXT),$(basename $(src))))
 
-.PHONY: clean
+.PHONY: clean test
 
 all: $(BINARIES)
 
@@ -21,3 +21,6 @@ $(BINARIES): %$(BIN_EXT): %.c
 
 clean:
 	$(RM) $(BINARIES)
+
+test: $(BINARIES)
+	for bin in $(BINARIES); do ./$$bin; done
