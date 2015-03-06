@@ -1,7 +1,7 @@
 CC=gcc
 CCFLAGS=
 LDFLAGS=-g0
-SOURCES=passfail.c
+SOURCES=passfail.c vectors.c
 HEADERS=../qunit.h
 
 ifdef windir
@@ -10,7 +10,7 @@ else
 	BIN_EXT=.out
 endif
 
-BINARIES=$(foreach src,$(SOURCES),$(addsuffix $(BIN_EXT),$(basename $(SOURCES))))
+BINARIES=$(foreach src,$(SOURCES),$(addsuffix $(BIN_EXT),$(basename $(src))))
 
 .PHONY: clean
 
