@@ -1,7 +1,7 @@
 CC=gcc
 CCFLAGS=
 LDFLAGS=-g0
-SOURCES=passfail.c vectors.c
+SOURCES=passfail.c vectors.c textfile.c
 HEADERS=../qunit.h
 
 ifdef windir
@@ -20,7 +20,7 @@ $(BINARIES): %$(BIN_EXT): %.c
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $<
 
 clean:
-	$(RM) $(BINARIES)
+	$(RM) $(BINARIES) *.log
 
 test: $(BINARIES)
 	for bin in $(BINARIES); do ./$$bin; done

@@ -19,12 +19,13 @@
 #define _QUNIT_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <errno.h>
 
 #define QUNIT_VERSION_MAJOR 0
-#define QUNIT_VERSION_MINOR 2
+#define QUNIT_VERSION_MINOR 3
 #define QUNIT_VERSION_PATCH 0
 #define __QUNIT_VERSION(__maj, __min, __pat) #__maj "." #__min "." #__pat
 #define _QUNIT_VERSION(__maj, __min, __pat) __QUNIT_VERSION(__maj, __min, __pat)
@@ -43,6 +44,11 @@
 /* Default reporter for test case which do not define one. */
 #ifndef QUNIT_DEFAULT_REPORTER
   #define QUNIT_DEFAULT_REPORTER qunit_reporter_console
+#endif
+
+/* Size of text buffers in bytes */
+#ifndef QUNIT_TEXTBUFFER_SIZE
+  #define QUNIT_TEXTBUFFER_SIZE 1024*8
 #endif
 
 /*
@@ -209,6 +215,35 @@ typedef struct _QUNIT_TESTCASE {
   QUNIT_REPORTERFUNC reporters[QUNIT_MAX_REPORTERS];
 } QUNIT_TESTCASE;
 
+static FILE *__qunit_reporter_textfile_handle = NULL; /* Text file reporter file handle */
+
+/*
+ * File name extension changer utility function.
+ *
+ * This function changes the extension of a file name or appends the new extension if `src_ext` is not the
+ * file name extension.
+ *
+ * fname: The file name
+ * src_ext: The extension to remove
+ * tgt_ext: The extension to add
+ * out_buff: The output buffer
+ *
+ * RETURN: `out_buff`
+ */
+char* __qunit_utils_changefileext(const char *fname, const char *src_ext, const char *tgt_ext, char* out_buff) {
+  if(!strcmp(&fname[strlen(fname) - strlen(src_ext)], src_ext)) {
+    strcpy(out_buff, fname);
+    strcpy(&out_buff[strlen(fname) - strlen(src_ext)], tgt_ext);
+    /* XXX: Continue from here */
+  } else {
+    fprintf(stderr, "WARNING: %s is not a %s file. Appending the %s extension...", fname, src_ext, tgt_ext);
+    strcpy(out_buff, fname);
+    strcat(out_buff, tgt_ext);
+  }
+
+  return out_buff;
+}
+
 /*
  * Initializes a test case.
  *
@@ -271,18 +306,39 @@ int qunit_tcase_add_reporter(QUNIT_TESTCASE *tcase, QUNIT_REPORTERFUNC func) {
 }
 
 /*
+ * Prints the QUnit program header to string.
+ *
+ * You can add the test version to the header by defining the QUNIT_TESTFILE_VERSION preprocessor constant.
+ *
+ * buff: The output buffer
+ *
+ * RETURN: `buff`
+ */
+char* __qunit_print_header(char *buff) {
+  #ifdef QUNIT_TESTFILE_VERSION
+    #define __QUNIT_TESTFILE_VERSION_STR "Test version : " QUNIT_TESTFILE_VERSION "\n"
+  #else
+    #define __QUNIT_TESTFILE_VERSION_STR ""
+  #endif
+
+  sprintf(buff, "Test file    : " __BASE_FILE__ "\n" \
+    "QUnit version: " QUNIT_VERSION "\n" \
+    __QUNIT_TESTFILE_VERSION_STR \
+    "Compiled on  : " __DATE__ "\n" \
+    "\n");
+
+  #undef __QUNIT_TESTFILE_VERSION_STR
+  return buff;
+}
+
+/*
  * Prints the QUnit program header.
  *
- * You can add the test version to the header by defining the TESTFILE_VERSION preprocessor constant.
+ * You can add the test version to the header by defining the QUNIT_TESTFILE_VERSION preprocessor constant.
  */
 void qunit_print_header() {
-  puts("Test file    : " __BASE_FILE__);
-  #ifdef TESTFILE_VERSION
-  puts("Test version : " TESTFILE_VERSION);
-  #endif /* TESTFILE_VERSION */
-  puts("QUnit version: " QUNIT_VERSION);
-  puts("Compiled on  : " __DATE__);
-  puts("");
+  char outbuff[QUNIT_TEXTBUFFER_SIZE];
+  printf("%s", __qunit_print_header(outbuff));
 }
 
 /*
@@ -296,7 +352,43 @@ void qunit_print_header() {
 void qunit_reporter_console(const char* name, QUNIT_RESULT result) {
   const char* s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
 
-  printf("\t[%s] %s()\n", s_result, name);
+  printf("\t[%s] %s\n", s_result, name);
+}
+
+/*
+ * Text file reporter cleanup function.
+ */
+void __qunit_reporter_textfile_exit() {
+  fclose(__qunit_reporter_textfile_handle);
+}
+
+/*
+ * Text file reporter function.
+ *
+ * This is a reporter function that outputs the test results to a text file.
+ *
+ * name: The test name
+ * result: The test result
+ */
+void qunit_reporter_textfile(const char *name, QUNIT_RESULT result) {
+  const char* s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
+
+  if(!__qunit_reporter_textfile_handle) {
+    char fname[QUNIT_TEXTBUFFER_SIZE];
+    __qunit_reporter_textfile_handle = fopen(__qunit_utils_changefileext(__BASE_FILE__, ".c", ".log", fname), "w");
+
+    if(__qunit_reporter_textfile_handle) {
+      char buff[QUNIT_TEXTBUFFER_SIZE];
+
+      atexit(__qunit_reporter_textfile_exit);
+      fprintf(__qunit_reporter_textfile_handle, __qunit_print_header(buff));
+    } else {
+      fprintf(stderr, "ERROR: Could not open file <<%s>> for writing.", fname);
+      abort();
+    }
+  }
+
+  fprintf(__qunit_reporter_textfile_handle, "[%s] %s()\n", s_result, name);
 }
 
 /*
