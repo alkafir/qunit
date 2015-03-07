@@ -16,11 +16,11 @@ BINARIES=$(foreach src,$(SOURCES),$(addsuffix $(BIN_EXT),$(basename $(src))))
 
 all: $(BINARIES)
 
-$(BINARIES): %$(BIN_EXT): %.c
+$(BINARIES): %$(BIN_EXT): %.c $(HEADERS)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $<
 
 clean:
 	$(RM) $(BINARIES) *.log
 
-test: $(BINARIES)
-	for bin in $(BINARIES); do ./$$bin; done
+run: $(BINARIES)
+	@for bin in $(BINARIES); do ./$$bin; echo -e "\n *******************************************************************************\n";done

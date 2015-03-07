@@ -24,9 +24,9 @@
 #include <string.h>
 #include <errno.h>
 
-#define QUNIT_VERSION_MAJOR 1
-#define QUNIT_VERSION_MINOR 0
-#define QUNIT_VERSION_PATCH 0
+#define QUNIT_VERSION_MAJOR @@VERSION_MAJOR@@
+#define QUNIT_VERSION_MINOR @@VERSION_MINOR@@
+#define QUNIT_VERSION_PATCH @@VERSION_PATCH@@
 #define __QUNIT_VERSION(__maj, __min, __pat) #__maj "." #__min "." #__pat
 #define _QUNIT_VERSION(__maj, __min, __pat) __QUNIT_VERSION(__maj, __min, __pat)
 #define QUNIT_VERSION _QUNIT_VERSION(QUNIT_VERSION_MAJOR, QUNIT_VERSION_MINOR, QUNIT_VERSION_PATCH)
