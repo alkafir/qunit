@@ -15,7 +15,11 @@ You can refer to the `samples/` directory for example code.
 Compiling and running QUnit test units does not require any external library but the standard C runtime. An example compilation line could be: `gcc -o mytest.out mytest.c`
 
 #### Reporters
-To export the test results you have to use *reporters*. A reporter is a function to which test results are supplied for exporting as soon as a test function ends. At this moment QUnit only supports one reporter, which is the *console reporter*: a reporter function that exports the results to the console.
+To export the test results you have to use *reporters*. A reporter is a function to which test results are supplied for exporting as soon as a test function ends. QUnit at the moment supports two reporters:
+  * Console reporter
+  * Text file reporter
+
+More reporters will be added.
 
 ### Bugs and feedback
 Please report bugs through the [issue tracker](https://github.com/alkafir/qunit/issue).
