@@ -24,8 +24,8 @@
 #include <string.h>
 #include <errno.h>
 
-#define QUNIT_VERSION_MAJOR 0
-#define QUNIT_VERSION_MINOR 3
+#define QUNIT_VERSION_MAJOR 1
+#define QUNIT_VERSION_MINOR 0
 #define QUNIT_VERSION_PATCH 0
 #define __QUNIT_VERSION(__maj, __min, __pat) #__maj "." #__min "." #__pat
 #define _QUNIT_VERSION(__maj, __min, __pat) __QUNIT_VERSION(__maj, __min, __pat)
@@ -63,7 +63,7 @@
  *    ...
  *  }
  */
-#define QUNIT_TEST(__test_name) void __test_name(QUNIT_RESULT *__qunit_result)
+#define QUNIT_TEST(__test_name) void _qunit_testfunc_##__test_name(QUNIT_RESULT *__qunit_result)
 
 /*
  * Test registration macro.
@@ -76,7 +76,7 @@
  * Example:
  *  qunit_tcase_add(&tcase, myTest1);
  */
-#define qunit_tcase_add(__tcase, __test_func) __qunit_tcase_add(__tcase, #__test_func, __test_func)
+#define qunit_tcase_add(__tcase, __test_func) __qunit_tcase_add(__tcase, #__test_func, _qunit_testfunc_##__test_func)
 
 /*
  * Test pass macro.
