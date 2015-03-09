@@ -199,7 +199,7 @@ typedef enum _QUNIT_RESULT {
 } QUNIT_RESULT;
 
 typedef void (*QUNIT_TESTFUNC)(QUNIT_RESULT*); /* Test function pointer */
-typedef void (*QUNIT_REPORTERFUNC)(const char *, QUNIT_RESULT); /* Reporter function pointer */
+typedef void (*QUNIT_REPORTERFUNC)(char const *, QUNIT_RESULT); /* Reporter function pointer */
 
 /*
  * Test case structure.
@@ -209,7 +209,7 @@ typedef void (*QUNIT_REPORTERFUNC)(const char *, QUNIT_RESULT); /* Reporter func
  * The structure contains the following data about each test: function pointer, string name, result.
  */
 typedef struct _QUNIT_TESTCASE {
-  const char *names[QUNIT_MAX_TESTS];
+  char const *names[QUNIT_MAX_TESTS];
   QUNIT_TESTFUNC tests[QUNIT_MAX_TESTS];
   QUNIT_RESULT results[QUNIT_MAX_TESTS];
   QUNIT_REPORTERFUNC reporters[QUNIT_MAX_REPORTERS];
@@ -230,7 +230,7 @@ static FILE *__qunit_reporter_textfile_handle = NULL; /* Text file reporter file
  *
  * RETURN: `out_buff`
  */
-char* __qunit_utils_changefileext(const char *fname, const char *src_ext, const char *tgt_ext, char* out_buff) {
+char* __qunit_utils_changefileext(char const *fname, char const *src_ext, char const *tgt_ext, char* out_buff) {
   if(!strcmp(&fname[strlen(fname) - strlen(src_ext)], src_ext)) {
     strcpy(out_buff, fname);
     strcpy(&out_buff[strlen(fname) - strlen(src_ext)], tgt_ext);
@@ -266,7 +266,7 @@ void qunit_tcase_init(QUNIT_TESTCASE *tcase) {
  * RETURN: 1 on success, 0 on failure
  * SEE: qunit_tcase_add()
  */
-int __qunit_tcase_add(QUNIT_TESTCASE *tcase, const char* test_name, QUNIT_TESTFUNC test_func) {
+int __qunit_tcase_add(QUNIT_TESTCASE *tcase, char const *test_name, QUNIT_TESTFUNC test_func) {
   size_t i;
 
   for(i = 0; i < QUNIT_MAX_TESTS && tcase->tests[i] != 0; i++);
@@ -349,8 +349,8 @@ void qunit_print_header() {
  * name: The test name
  * result: The test result
  */
-void qunit_reporter_console(const char* name, QUNIT_RESULT result) {
-  const char* s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
+void qunit_reporter_console(char const *name, QUNIT_RESULT result) {
+  char const *s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
 
   printf("\t[%s] %s\n", s_result, name);
 }
@@ -370,8 +370,8 @@ void __qunit_reporter_textfile_exit() {
  * name: The test name
  * result: The test result
  */
-void qunit_reporter_textfile(const char *name, QUNIT_RESULT result) {
-  const char* s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
+void qunit_reporter_textfile(char const *name, QUNIT_RESULT result) {
+  char const *s_result = (result == QUNIT_RESULT_PASSED? "PASSED": "FAILED");
 
   if(!__qunit_reporter_textfile_handle) {
     char fname[QUNIT_TEXTBUFFER_SIZE];
