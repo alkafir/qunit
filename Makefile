@@ -26,7 +26,7 @@ dist: $(DISTFILES)
 samples:
 	$(MAKE) -C samples/
 
-run-samples:
+run-samples: $(HEADERS)
 	$(MAKE) -C samples/ run
 
 install:
