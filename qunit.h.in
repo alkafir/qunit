@@ -48,7 +48,7 @@
 
 /* Size of text buffers in bytes */
 #ifndef QUNIT_TEXTBUFFER_SIZE
-  #define QUNIT_TEXTBUFFER_SIZE 1024*8
+  #define QUNIT_TEXTBUFFER_SIZE (1024*8)
 #endif
 
 /*
@@ -83,14 +83,14 @@
  *
  * Immediately passes the current test.
  */
-#define qunit_pass() *__qunit_result = QUNIT_RESULT_PASSED; return
+#define qunit_pass() do { *__qunit_result = QUNIT_RESULT_PASSED; return; } while(0)
 
 /*
  * Test fail macro.
  *
  * Immediately fails the test.
  */
-#define qunit_fail() *__qunit_result = QUNIT_RESULT_FAILED; return
+#define qunit_fail() do { *__qunit_result = QUNIT_RESULT_FAILED; return; } while(0)
 
 /*
  * Condition assert macro.
@@ -102,7 +102,7 @@
  * Example:
  *  qunit_assert(1 == 5)
  */
-#define qunit_assert(__code) if(!__code) qunit_fail()
+#define qunit_assert(__code) if(!(__code)) qunit_fail()
 
 /*
  * Error assert macro.
@@ -114,14 +114,14 @@
  * Example:
  *  qunit_assert_errno(ERANGE)
  */
-#define qunit_assert_errno(__errno) if(errno == __errno) qunit_fail()
+#define qunit_assert_errno(__errno) if(errno == (__errno)) qunit_fail()
 
 /*
  * No error assert macro.
  *
  * Fails the test if `errno` is non-zero.
  */
-#define qunit_assert_errno0() if(errno) qunit_fail()
+#define qunit_assert_errno0() if((errno)) qunit_fail()
 
 /*
  * Vector equality assertion macro.
@@ -139,7 +139,7 @@
  *
  *  qunit_assert_vector_equals(a, b, 3); <-- Will fail
  */
-#define qunit_assert_vector_equals(__vec1, __vec2, __len) { size_t __i; for(__i = 0; __i < __len; __i++) if(__vec1[__i] != __vec2[__i]) qunit_fail(); } while(0)
+#define qunit_assert_vector_equals(__vec1, __vec2, __len) { size_t __i; for(__i = 0; __i < (__len); __i++) if((__vec1)[__i] != (__vec2)[__i]) qunit_fail(); } while(0)
 
 /*
  * Vector equality assertion macro.
@@ -162,7 +162,7 @@
  * See:
  *  qunit_assert_vector_equals3() for comparing the data of vectors of pointers.
  */
-#define qunit_assert_vector_equals2(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < __len; __i++) if(memcmp(&__vec1[__i], &__vec2[__i], __sz)) qunit_fail(); } while(0)
+#define qunit_assert_vector_equals2(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < (__len); __i++) if(memcmp(&(__vec1)[__i], &(__vec2)[__i], (__sz))) qunit_fail(); } while(0)
 
 /*
  * Vector equality assertion macro.
@@ -188,7 +188,7 @@
  *
  *  qunit_assert_vector_equals2(a, b, 2, sizeof(struct s));
  */
-#define qunit_assert_vector_equals3(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < __len; __i++) if(memcmp(__vec1[__i], __vec2[__i], __sz)) qunit_fail(); } while(0)
+#define qunit_assert_vector_equals3(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < (__len); __i++) if(memcmp((__vec1)[__i], (__vec2)[__i], (__sz))) qunit_fail(); } while(0)
 
 /*
  * Test result enumeration.
