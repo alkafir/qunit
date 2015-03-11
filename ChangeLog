@@ -1,3 +1,12 @@
+2015-03-11  Alfredo Mungo  <alfredo.mungo@openmailbox.org>
+ * Version 2.0.0
+  Removed the qunit_assert_vector_equals3() macro.
+
+2015-03-09  Alfredo Mungo  <alfredo.mungo@openmailbox.org>
+ * Version 1.0.1
+   Fixed potential issue sources.
+   Improved code readability.
+
 2015-03-07  Alfredo Mungo  <alfredo.mungo@openmailbox.org>
  * Version 1.0.0
    Added support for text file reporter.

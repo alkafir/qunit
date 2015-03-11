@@ -153,42 +153,15 @@
  * __sz: The size of the single element of the vectors
  *
  * Example:
- *  struct s{ int a; char b; };
- *  struct s a[] = {{1, 2}, {1, 3}};
- *  struct s b[] = {{1, 2}, {1, 3}};
+ *  unsigned int a[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+ *  unsigned int b[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
  *
- *  qunit_assert_vector_equals2(a, b, 2, sizeof(struct s)); <-- Will pass
+ *  qunit_assert_vector_equals2(a, b, 10, sizeof(unsigned int));
  *
  * See:
  *  qunit_assert_vector_equals3() for comparing the data of vectors of pointers.
  */
 #define qunit_assert_vector_equals2(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < (__len); __i++) if(memcmp(&(__vec1)[__i], &(__vec2)[__i], (__sz))) qunit_fail(); } while(0)
-
-/*
- * Vector equality assertion macro.
- *
- * Fails the test if the two provided vectors are not the same.
- * Equality is tested through a memory equality comparison (memcmp() function).
- * Each element of the provided vectors must be a pointer to data of size `__sz`.
- *
- * __vec1: The first vector
- * __vec2: The second vector
- * __len: The length of the vectors
- * __sz: The size of the single element of the vectors
- *
- * Example:
- *  struct s{ int a; char b; };
- *  typedef struct s * s_ptr;
- *
- *  struct s s1 = {1, 2};
- *  struct s s2 = {1, 3};
- *
- *  s_ptr a[] = {&s1, &s2};
- *  s_ptr b[] = {&s1, &s2};
- *
- *  qunit_assert_vector_equals2(a, b, 2, sizeof(struct s));
- */
-#define qunit_assert_vector_equals3(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < (__len); __i++) if(memcmp((__vec1)[__i], (__vec2)[__i], (__sz))) qunit_fail(); } while(0)
 
 /*
  * Test result enumeration.
@@ -230,11 +203,10 @@ static FILE *__qunit_reporter_textfile_handle = NULL; /* Text file reporter file
  *
  * RETURN: `out_buff`
  */
-char* __qunit_utils_changefileext(char const *fname, char const *src_ext, char const *tgt_ext, char* out_buff) {
+char* __qunit_utils_changefileext(char const *fname, char const *src_ext, char const *tgt_ext, char *out_buff) {
   if(!strcmp(&fname[strlen(fname) - strlen(src_ext)], src_ext)) {
     strcpy(out_buff, fname);
     strcpy(&out_buff[strlen(fname) - strlen(src_ext)], tgt_ext);
-    /* XXX: Continue from here */
   } else {
     fprintf(stderr, "WARNING: %s is not a %s file. Appending the %s extension...", fname, src_ext, tgt_ext);
     strcpy(out_buff, fname);
@@ -336,7 +308,7 @@ char* __qunit_print_header(char *buff) {
  *
  * You can add the test version to the header by defining the QUNIT_TESTFILE_VERSION preprocessor constant.
  */
-void qunit_print_header() {
+void qunit_print_header(void) {
   char outbuff[QUNIT_TEXTBUFFER_SIZE];
   printf("%s", __qunit_print_header(outbuff));
 }
@@ -358,7 +330,7 @@ void qunit_reporter_console(char const *name, QUNIT_RESULT result) {
 /*
  * Text file reporter cleanup function.
  */
-void __qunit_reporter_textfile_exit() {
+void __qunit_reporter_textfile_exit(void) {
   fclose(__qunit_reporter_textfile_handle);
 }
 
