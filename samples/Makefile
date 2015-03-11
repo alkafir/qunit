@@ -1,5 +1,5 @@
 CC=gcc
-CCFLAGS=
+CCFLAGS=-Wall
 LDFLAGS=-g0
 SOURCES=passfail.c vectors.c textfile.c
 HEADERS=../qunit.h
@@ -22,5 +22,8 @@ $(BINARIES): %$(BIN_EXT): %.c $(HEADERS)
 clean:
 	$(RM) $(BINARIES) *.log
 
-run: $(BINARIES)
+$(HEADERS):
+	$(MAKE) -C ../
+
+run: $(BINARIES) $(HEADERS)
 	@for bin in $(BINARIES); do ./$$bin; echo -e "\n *******************************************************************************\n";done

@@ -1,6 +1,7 @@
 M4=m4
 HEADERS=qunit.h
-DISTFILES=$(HEADERS)
+IN_FILES=$(foreach f,$(HEADERS),$(addsuffix .in,$(f)))
+DISTFILES=$(HEADERS) ChangeLog LICENSE
 
 .PHONY: clean dist samples install run-samples
 
@@ -23,10 +24,10 @@ dist: $(DISTFILES)
 		tar -cJvf qunit-$$QUNIT_VERSION.tar.xz qunit-$$QUNIT_VERSION && \
 		$(RM) -r qunit-$$QUNIT_VERSION
 	
-samples:
+samples: $(HEADERS) $(IN_FILES)
 	$(MAKE) -C samples/
 
-run-samples: $(HEADERS)
+run-samples: $(HEADERS) $(IN_FILES)
 	$(MAKE) -C samples/ run
 
 install:
