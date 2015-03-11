@@ -4,3 +4,4 @@
 *~
 *.log
 qunit.h
+*.tar.*
