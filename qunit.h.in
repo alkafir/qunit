@@ -353,7 +353,7 @@ void qunit_reporter_textfile(char const *name, QUNIT_RESULT result) {
       char buff[QUNIT_TEXTBUFFER_SIZE];
 
       atexit(__qunit_reporter_textfile_exit);
-      fprintf(__qunit_reporter_textfile_handle, __qunit_print_header(buff));
+      fprintf(__qunit_reporter_textfile_handle, "%s", __qunit_print_header(buff));
     } else {
       fprintf(stderr, "ERROR: Could not open file <<%s>> for writing.", fname);
       abort();
