@@ -159,9 +159,35 @@
  *  qunit_assert_vector_equals2(a, b, 10, sizeof(unsigned int));
  *
  * See:
- *  qunit_assert_vector_equals3() for comparing the data of vectors of pointers.
+ *  qunit_assert_vector_equals3() for better comparing the data of vectors of
+ *  pointers.
  */
 #define qunit_assert_vector_equals2(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < (__len); __i++) if(memcmp(&(__vec1)[__i], &(__vec2)[__i], (__sz))) qunit_fail(); } while(0)
+
+/*
+ * Vector equality assertion macro.
+ *
+ * Fails the test if the two provided vectors are not the same.
+ * Equality is tested through a function called for tuples made of elements of
+ * both vectors. The test function shall accept two arguments, each an element
+ * f __vec1 or __vec2; it must return a boolean value: true if the values of
+ * __vec1 and __vec2 are equal, false they're if not.
+ *
+ * __vec1: The first vector
+ * __vec2: The second vector
+ * __len: The length of the vectors
+ * __func: The equality testing function
+ *
+ * Example:
+ *  unsigned int a[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+ *  unsigned int b[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+ *
+ *  bool f(unsigned int ea, unsigned int eb) {
+ *   return ea == eb;
+ *  }
+ *  qunit_assert_vector_equals3(a, b, 10, f);
+ */
+#define qunit_assert_vector_equals3(__vec1, __vec2, __len, __func) { size_t __i; for(__i = 0; __i < (__len); __i++) if(!__func((__vec1)[__i], (__vec2)[__i])) qunit_fail(); } while(0)
 
 /*
  * Test result enumeration.
