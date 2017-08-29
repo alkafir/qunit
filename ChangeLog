@@ -1,3 +1,8 @@
+2017-08-29  Alfredo Mungo  <alfredo.mungo@protonmail.ch>
+ * Version 2.1.1
+  Fixed assertion macros syntax errors.
+  Improved robustness of pass/fail macros.
+
 2016-11-27  Alfredo Mungo  <alfredo.mungo@openmailbox.org>
  * Version 2.1.0
   Added new version of qunit_assert_vector_equals3() macro.

@@ -114,14 +114,14 @@
  * Example:
  *  qunit_assert_errno(ERANGE)
  */
-#define qunit_assert_errno(__errno) if(errno == (__errno)) qunit_fail()
+#define qunit_assert_errno(__errno) do { if(errno == (__errno)) qunit_fail(); } while(0)
 
 /*
  * No error assert macro.
  *
  * Fails the test if `errno` is non-zero.
  */
-#define qunit_assert_errno0() if((errno)) qunit_fail()
+#define qunit_assert_errno0() do { if((errno)) qunit_fail(); } while(0)
 
 /*
  * Vector equality assertion macro.
@@ -139,7 +139,7 @@
  *
  *  qunit_assert_vector_equals(a, b, 3); <-- Will fail
  */
-#define qunit_assert_vector_equals(__vec1, __vec2, __len) { size_t __i; for(__i = 0; __i < (__len); __i++) if((__vec1)[__i] != (__vec2)[__i]) qunit_fail(); } while(0)
+#define qunit_assert_vector_equals(__vec1, __vec2, __len) do { size_t __i; for(__i = 0; __i < (__len); __i++) if((__vec1)[__i] != (__vec2)[__i]) qunit_fail(); } while(0)
 
 /*
  * Vector equality assertion macro.
@@ -162,7 +162,7 @@
  *  qunit_assert_vector_equals3() for better comparing the data of vectors of
  *  pointers.
  */
-#define qunit_assert_vector_equals2(__vec1, __vec2, __len, __sz) { size_t __i; for(__i = 0; __i < (__len); __i++) if(memcmp(&(__vec1)[__i], &(__vec2)[__i], (__sz))) qunit_fail(); } while(0)
+#define qunit_assert_vector_equals2(__vec1, __vec2, __len, __sz) do { size_t __i; for(__i = 0; __i < (__len); __i++) if(memcmp(&(__vec1)[__i], &(__vec2)[__i], (__sz))) qunit_fail(); } while(0)
 
 /*
  * Vector equality assertion macro.
@@ -187,7 +187,7 @@
  *  }
  *  qunit_assert_vector_equals3(a, b, 10, f);
  */
-#define qunit_assert_vector_equals3(__vec1, __vec2, __len, __func) { size_t __i; for(__i = 0; __i < (__len); __i++) if(!__func((__vec1)[__i], (__vec2)[__i])) qunit_fail(); } while(0)
+#define qunit_assert_vector_equals3(__vec1, __vec2, __len, __func) do { size_t __i; for(__i = 0; __i < (__len); __i++) if(!__func((__vec1)[__i], (__vec2)[__i])) qunit_fail(); } while(0)
 
 /*
  * Test result enumeration.
